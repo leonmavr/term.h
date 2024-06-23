@@ -9,5 +9,6 @@ Can be used both in C and C++. Requires a POSIX system.
 
 // ...
 TERM_INIT();
-TERM_PRINT_AT(100, 100, '#');
+unsigned x = 41, y = 42;
+TERM_PRINT_AT(x, y, '#');
 ```
