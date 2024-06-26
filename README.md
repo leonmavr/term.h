@@ -3,12 +3,22 @@ header to print characters at any coordinate on the terminal
 
 ## Usage
 
-Can be used both in C and C++. Requires a POSIX system.
+Can be used both in C and C++. Requires a POSIX system. For example
 ```c
-#inclue "term.h"
+#include "term.h"
 
-// ...
-TERM_INIT();
-unsigned x = 41, y = 42;
-TERM_PRINT_AT(x, y, '#');
+int main() {
+    TERM_INIT();
+    for (int i = 0; i < 10; i++) TERM_PRINT_AT(2 + (int)i/2, 4 + i, '#')
+    return 0;
+}
+```
+Prints:
+```
+
+   ##
+     ##
+       ##
+         ##
+           ##
 ```
