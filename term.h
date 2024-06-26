@@ -1,22 +1,29 @@
 #include <cstdio>
-#include <sys/ioctl.h>
-#include <unistd.h>
 
 #ifdef __cplusplus
+
+/*
+ * Description:
+ *
+ * Header to print at specific coordinates on the terminal. Requires a POSIX system.
+ * Does not work on Windows.
+ */
 extern "C" {
-//----------------------------------------------------------------------------------
-// Linux POSIX terminal manipulation macros
-//----------------------------------------------------------------------------------
-#define TERM_ROWS 0
-#define TERM_COLS 0
-#define TERM_CLEAR() printf("\033[H\033[J")
-#define TERM_GOTO_TOPLEFT() printf("\033[0;0H")
-#define TERM_HIDE_CURSOR() printf("\e[?25l")
-#define TERM_SHOW_CURSOR() printf("\e[?25h")
-#define TERM_INIT() do {                                                \
-    TERM_CLEAR();                                                       \
-    TERM_HIDE_CURSOR();                                                 \
-    TERM_GOTO_TOPLEFT();                                                \
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <wchar.h>
+#include <locale.h>
+
+/*
+ * ASCII characters
+ */
+#define TPRINT_ROWS 0
+#define TPRINT_COLS 0
+#define TPRINT_CLEAR() printf("\033[H\033[J")
+#define TPRINT_GOTO_TOPLEFT() printf("\033[0;0H")
+#define TPRINT_HIDE_CURSOR() printf("\e[?25l")
+#define TPRINT_SHOW_CURSOR() printf("\e[?25h")
+#define _TPRINT_GET_SIZE() do { \
     struct winsize w;                                                   \
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {                   \
         perror("ERROR: ioctl can't capture terminal's rows/columns.");  \
@@ -25,12 +32,30 @@ extern "C" {
     g_termRows = w.ws_row;                                              \
     g_termCols = w.ws_col;                                              \
 } while(0)
-#define TERM_PRINT_AT(x, y, ch) printf("\033[%d;%dH%c", (y), (x), (ch));
+
+#define TPRINT_INIT() do {                                              \
+    TPRINT_CLEAR();                                                     \
+    TPRINT_HIDE_CURSOR();                                               \
+    TPRINT_GOTO_TOPLEFT();                                              \
+    _TPRINT_GET_SIZE();                                                 \
+} while(0)
+#define TPRINT_PRINT_AT(x, y, c) printf("\033[%d;%dH%c", (y), (x), (c));
+
+/*
+ * Unicode characters
+ */
+#define TPRINT_WCLEAR() wprintf(L"\033[H\033[J");
+#define TPRINT_WINIT() do {                                             \
+    setlocale(LC_ALL, "");                                              \
+    wprintf(L"\033[H\033[J");                                           \
+    _TPRINT_GET_SIZE();                                                 \
+} while(0)
+#define TPRINT_WPRINT_AT(x, y, wc) wprintf(L"\033[%d;%dH%lc", (y), (c), (wc))
 
 /* terminal's rows */
-int g_termRows = 0;
+extern int g_termRows = 0;
 /* terminal's columns */
-int g_termCols = 0;
+extern int g_termCols = 0;
 
 } // extern "C"
 #endif // __cplusplus
