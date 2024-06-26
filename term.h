@@ -25,7 +25,7 @@ extern "C" {
     g_termRows = w.ws_row;                                              \
     g_termCols = w.ws_col;                                              \
 } while(0)
-#define TERM_PRINT_AT(x, y, c) printf("\033[%d;%dH%c", (x), (y), (c));
+#define TERM_PRINT_AT(x, y, ch) printf("\033[%d;%dH%c", (y), (x), (ch));
 
 /* terminal's rows */
 int g_termRows = 0;
